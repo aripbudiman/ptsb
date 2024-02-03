@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
 
@@ -11,7 +10,7 @@ class ProductController extends Controller
 {
 
     public function getAllProducts(){
-        $products = Product::with('category')->get();
+        $products = Product::getAllProduct();
         return response()->json($products,200);
     }
 
