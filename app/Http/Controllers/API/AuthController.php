@@ -13,8 +13,12 @@ class AuthController extends Controller
     
     public function index()
     {
-        $data=User::all(['name','email','role']);
-        return response()->json($data,200);
+        if(Auth::check()){
+            $data=User::all(['id','name','email','role','branch_id']);
+            return response()->json($data,200);
+        }else{
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
     }
 
     public function store(Request $request)
@@ -42,17 +46,38 @@ class AuthController extends Controller
         }
     }
 
-    public function show(string $id)
-    {
-        //
+    public function getUserById($id){
+        $user=User::findOrFail($id);
+        return response()->json($user,200);
     }
 
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(Request $request, $id){
+        $user=User::findOrFail($id);
+        $validator=Validator::make($request->all(), [
+            'email'=>'required|email',
+            'name'=>'required',
+            'role'=>'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 422);
+        }else{
+            $user->update($request->all());
+            return response()->json(['message' => 'User Updated'],200);
+        }
     }
-    public function destroy(string $id)
-    {
-        //
+
+    public function destroy(User $user){
+        try {
+            $user->delete();
+            return response()->json(['message' => 'User Deleted'],200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'User cannot be deleted'], 422);
+        }
     }
+
+    public function getUserWithBranch(){
+        $data=User::with('branch')->get();
+        return response()->json($data,200);
+    }
+    
 }

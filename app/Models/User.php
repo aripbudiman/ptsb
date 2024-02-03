@@ -36,4 +36,8 @@ class User extends Authenticatable
         return parent::all($columns)->take(100);
     }
 
+    public function branch(){
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
 }
