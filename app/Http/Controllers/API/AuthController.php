@@ -79,5 +79,10 @@ class AuthController extends Controller
         $data=User::with('branch')->get();
         return response()->json($data,200);
     }
+
+    public function logout(){
+        Auth::user()->tokens()->delete();
+        return response()->json(['message' => 'Logout Success'],200);
+    }
     
 }

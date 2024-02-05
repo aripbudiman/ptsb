@@ -6,10 +6,11 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\BranchController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\TransactionController;
 
 Route::post('login',[AuthController::class,'store'])->name('login');
-
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('logout',[AuthController::class,'logout'])->name('logout');
     Route::get('users',[AuthController::class,'index'])->name('users');
     Route::get('users/{id}',[AuthController::class,'getUserById'])->name('users.edit');
     Route::put('users/{id}',[AuthController::class,'update'])->name('users.update');
@@ -40,4 +41,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('order/decrement/{order}',[OrderController::class,'decrementOrder'])->name('order.decrement');
     Route::post('order',[OrderController::class,'addToCart'])->name('order.cart');
     Route::delete('order/{order}',[OrderController::class,'destroy'])->name('order.delete');
+
+    Route::post('paynow',[TransactionController::class,'payNow'])->name('paynow');
 });

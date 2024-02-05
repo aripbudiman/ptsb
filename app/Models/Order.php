@@ -12,22 +12,34 @@ class Order extends Model
 
     protected $table='orders';
     protected $guarded=[];
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+    
 
     public static function getAllOrder(){
-        $user=Auth::id();
-        $order=Order::where('user_id',$user)->with('product')->get();
+        $user=Auth::user()->branch_id;
+        $order=Order::where('branch_id',$user)->with('product')->get();
         return $order;
     }
 
     public static function getOrderPending(){
-        $user=Auth::id();
-        $order=Order::where('user_id',$user)->where('status','pending')->with('product')->get();
+        $user=Auth::user()->branch_id;
+        $order=Order::where('branch_id',$user)->where('status','pending')->with('details','details.product','details.product.category')->get();
         return $order;
+    }
+
+    public function details(){
+        return $this->hasMany(DetailOrder::class,'order_id','id');
+    }
+
+    public static function checkOrder(){
+        $user=Auth::user()->branch_id;
+        $order=Order::where('branch_id',$user)->where('status','pending')->exists();
+        return $order;
+    }
+
+    public static function orderExists(){
+        $user=Auth::user()->branch_id;
+        $order=Order::where('branch_id',$user)->where('status','pending')->first();
+        return $order->id;
     }
     
 }
